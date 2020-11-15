@@ -27,6 +27,7 @@
                         mdi-delete
                     </v-icon>
                 </template>
+
                 <template v-slot:[`item.priority`]="{ item }">
                     <span v-if="item.priority == 'Penting'">
                         <v-chip
@@ -56,9 +57,33 @@
                         </v-chip>
                     </span>
                 </template>
+
+                <template v-slot:[`item.checkboxes`]="{ item }">
+                    <v-checkbox
+                    :value="item"
+                    v-model="checker"
+                    ></v-checkbox>
+                </template>
+
             </v-data-table>
         </v-card>
-            
+
+            <br>
+
+        <span v-if="checker.length != 0">
+        <v-card align="justify">
+            <v-container class="ml-3 mt-3">
+                <h4>Delete Multiple :</h4>
+                <li class="ml-2" v-for="item in checker" :key="item.checkboxes">
+                    {{ item.task }}
+                </li>
+                <v-btn class="mt-3" @click="dialogDelete=true, deleteAllItem()" color="red" dark>
+                    Hapus Semua
+                </v-btn>
+            </v-container>
+        </v-card>
+        </span>
+
         <v-dialog v-model="dialogTable" persistent max-width="600px">
             <v-card>
                 <v-card-title>
@@ -184,6 +209,7 @@
                     { text: "Priority", value: "priority" },
                     { text: "Note", value: "note" },
                     { text: "Actions", value: "actions" },
+                    { text: "", value: "checkboxes" },
                 ],
                 headersSelesai: [
                     {
@@ -200,19 +226,23 @@
                         task: "bernafas",
                         priority: "Penting",
                         note: "huffttt",
+                        checkboxes:false,
                     },
                     {
                         task: "nongkrong",
                         priority: "Tidak penting",
                         note: "bersama tman2",
+                        checkboxes:false,
                     },
                     {
                         task: "masak",
                         priority: "Biasa",
                         note: "masak air 500ml",
+                        checkboxes:false,
                     },
                 ],
                 todosDelete: [],
+                checker:[],
                 formTodo: {
                     task: null,
                     priority: null,
@@ -275,7 +305,16 @@
             cancelDelete() {
                 this.dialogDelete = false;
                 this.resetForm();
-            }
+            },
+            deleteAllItem(){
+                var i=0;
+                for(i=0; i<this.checker.length; i++)
+                {
+                    this.index = this.todos.indexOf(this.checker[i]);
+                    this.confirmDelete();
+                }
+                this.checker=[];
+            },
         },
     };
 </script>
